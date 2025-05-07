@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>React Security Suite Icon Template</title>
+  <style>
+    body {
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    .icon-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    .icon {
+      background-color: #61dafb; /* React blue */
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    .icon::after {
+      content: "";
+      position: absolute;
+      border: 2px solid #20232a;
+      border-radius: 50%;
+      width: 75%;
+      height: 75%;
+    }
+    .icon-16 {
+      width: 16px;
+      height: 16px;
+    }
+    .icon-48 {
+      width: 48px;
+      height: 48px;
+    }
+    .icon-128 {
+      width: 128px;
+      height: 128px;
+    }
+    .instructions {
+      max-width: 500px;
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="icon-container">
+    <h1>React Security Suite Icons</h1>
+    <div class="icon icon-16"></div>
+    <p>16x16 Icon</p>
+    <div class="icon icon-48"></div>
+    <p>48x48 Icon</p>
+    <div class="icon icon-128"></div>
+    <p>128x128 Icon</p>
+    
+    <div class="instructions">
+      <h2>How to save these as PNG files:</h2>
+      <ol>
+        <li>Take a screenshot of each icon (use a tool that allows you to select an area)</li>
+        <li>Crop to the exact dimensions (16x16, 48x48, 128x128)</li>
+        <li>Save each image as PNG in the icons folder with the following names:
+          <ul>
+            <li>icon16.png</li>
+            <li>icon48.png</li>
+            <li>icon128.png</li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+  </div>
+</body>
+</html>
