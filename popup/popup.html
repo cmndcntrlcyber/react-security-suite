@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React Security Suite</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>React Security Suite</h1>
+      <div class="mode-toggle">
+        <span class="mode-label">Mode:</span>
+        <div class="toggle-container">
+          <input type="checkbox" id="mode-switch" class="toggle-checkbox">
+          <label for="mode-switch" class="toggle-label">
+            <span class="toggle-inner"></span>
+            <span class="toggle-switch"></span>
+          </label>
+        </div>
+        <span id="current-mode">Defense</span>
+      </div>
+    </header>
+
+    <div class="status-container">
+      <div class="status" id="status">Checking page...</div>
+    </div>
+
+    <!-- Defense Mode UI -->
+    <div id="defense-container" class="mode-container">
+      <div id="vulnerabilities-container" class="hidden">
+        <h2>Vulnerabilities Found:</h2>
+        <ul id="vulnerabilities-list"></ul>
+      </div>
+      
+      <div id="safe-container" class="hidden">
+        <div class="safe-message">✓ No vulnerabilities detected</div>
+      </div>
+      
+      <div class="actions">
+        <button id="scan-button">Scan Again</button>
+        <button id="protect-button">Apply Protection</button>
+      </div>
+      
+      <div class="info-section">
+        <h3>Protection Status:</h3>
+        <div id="protection-status">Not Applied</div>
+      </div>
+    </div>
+
+    <!-- Training Mode UI -->
+    <div id="training-container" class="mode-container hidden">
+      <div class="warning-banner">
+        ⚠️ TRAINING MODE - FOR EDUCATIONAL PURPOSES ONLY ⚠️
+      </div>
+      
+      <div class="training-section">
+        <h2>Security Demonstrations</h2>
+        <p class="training-description">
+          These demonstrations show how React vulnerabilities could be exploited.
+          All demonstrations are contained and will not cause actual harm.
+        </p>
+        
+        <div class="demo-options">
+          <div class="demo-option">
+            <h3>React Internals Access</h3>
+            <p>Demonstrates how malicious code could access React internals.</p>
+            <button class="demo-button" data-demo="reactInternals">Run Demo</button>
+          </div>
+          
+          <div class="demo-option">
+            <h3>DOM Manipulation</h3>
+            <p>Shows how React DOM could be hijacked to inject content.</p>
+            <button class="demo-button" data-demo="domManipulation">Run Demo</button>
+          </div>
+          
+          <div class="demo-option">
+            <h3>Cookie Access</h3>
+            <p>Demonstrates how cookies could be accessed and exfiltrated.</p>
+            <button class="demo-button" data-demo="cookieAccess">Run Demo</button>
+          </div>
+          
+          <div class="demo-option">
+            <h3>Persistent Hook</h3>
+            <p>Shows how attacks can persist through React re-renders.</p>
+            <button class="demo-button" data-demo="persistentHook">Run Demo</button>
+          </div>
+        </div>
+        
+        <div class="demo-controls">
+          <button id="stop-demo-button" disabled>Stop Demonstration</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <button id="view-logs-button">View Logs</button>
+      <div class="version">v1.0.0</div>
+    </div>
+
+    <!-- Logs Modal -->
+    <div id="logs-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Activity Logs</h2>
+          <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div id="logs-container"></div>
+        </div>
+        <div class="modal-footer">
+          <button id="clear-logs-button">Clear Logs</button>
+          <button id="close-logs-button">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Training Mode Confirmation Modal -->
+    <div id="training-confirm-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Enable Training Mode?</h2>
+          <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div class="warning-message">
+            <p><strong>⚠️ WARNING ⚠️</strong></p>
+            <p>Training mode demonstrates security vulnerabilities for educational purposes only.</p>
+            <p>This mode should only be used by security professionals in controlled environments.</p>
+            <p>Do you want to continue?</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="confirm-training-button">Yes, Enable Training Mode</button>
+          <button id="cancel-training-button">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

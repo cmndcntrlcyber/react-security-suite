@@ -1,0 +1,509 @@
+/* React Security Suite - Popup Styles */
+
+:root {
+  --primary-color: #2196F3;
+  --primary-dark: #1976D2;
+  --primary-light: #BBDEFB;
+  --accent-color: #FF5722;
+  --text-color: #212121;
+  --text-secondary: #757575;
+  --divider-color: #BDBDBD;
+  --background-color: #FFFFFF;
+  --danger-color: #F44336;
+  --warning-color: #FFC107;
+  --success-color: #4CAF50;
+  --info-color: #2196F3;
+  
+  --defense-color: #4CAF50;
+  --training-color: #FF5722;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  width: 400px;
+  min-height: 500px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--divider-color);
+}
+
+h1 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+h2 {
+  font-size: 16px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+h3 {
+  font-size: 14px;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+
+.mode-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.mode-label {
+  margin-right: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.toggle-container {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+  margin: 0 8px;
+}
+
+.toggle-checkbox {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-label {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--defense-color);
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.toggle-switch {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+.toggle-checkbox:checked + .toggle-label {
+  background-color: var(--training-color);
+}
+
+.toggle-checkbox:checked + .toggle-label .toggle-switch {
+  transform: translateX(26px);
+}
+
+.toggle-inner {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#current-mode {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--defense-color);
+}
+
+.toggle-checkbox:checked ~ #current-mode {
+  color: var(--training-color);
+}
+
+.status-container {
+  margin-bottom: 16px;
+}
+
+.status {
+  padding: 8px 12px;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  display: inline-block;
+  font-size: 13px;
+}
+
+.status-warning {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-safe {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.safe-message {
+  color: #155724;
+  font-weight: 600;
+  padding: 10px;
+  background-color: #d4edda;
+  border-radius: 4px;
+  text-align: center;
+  margin: 15px 0;
+}
+
+#vulnerabilities-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+#vulnerabilities-list li {
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 4px;
+  border-left: 4px solid #ccc;
+}
+
+.severity-high {
+  background-color: #fff3cd;
+  border-left-color: #ffc107 !important;
+}
+
+.severity-critical {
+  background-color: #f8d7da;
+  border-left-color: #dc3545 !important;
+}
+
+.severity-medium {
+  background-color: #fff3cd;
+  border-left-color: #fd7e14 !important;
+}
+
+.severity-low {
+  background-color: #d1ecf1;
+  border-left-color: #17a2b8 !important;
+}
+
+.vuln-type {
+  font-weight: bold;
+  display: block;
+}
+
+.vuln-severity {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background-color: #f0f0f0;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.vuln-description {
+  margin-top: 5px;
+  margin-bottom: 0;
+  font-size: 13px;
+}
+
+.vuln-details {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--primary-color);
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: var(--primary-dark);
+}
+
+button:disabled {
+  background-color: var(--divider-color);
+  cursor: not-allowed;
+}
+
+.info-section {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--divider-color);
+}
+
+#protection-status {
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.mode-container {
+  flex: 1;
+}
+
+.warning-banner {
+  background-color: var(--training-color);
+  color: white;
+  text-align: center;
+  padding: 8px;
+  font-weight: bold;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.training-description {
+  font-size: 13px;
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+}
+
+.demo-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.demo-option {
+  background-color: #f5f5f5;
+  padding: 12px;
+  border-radius: 4px;
+  border-left: 3px solid var(--primary-color);
+}
+
+.demo-option h3 {
+  font-size: 14px;
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+
+.demo-option p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.demo-button {
+  width: 100%;
+  background-color: var(--primary-color);
+  font-size: 12px;
+}
+
+.demo-controls {
+  display: flex;
+  justify-content: center;
+}
+
+#stop-demo-button {
+  background-color: var(--danger-color);
+}
+
+#stop-demo-button:hover {
+  background-color: #d32f2f;
+}
+
+.footer {
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid var(--divider-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.version {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+#view-logs-button {
+  background-color: transparent;
+  color: var(--primary-color);
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+#view-logs-button:hover {
+  background-color: rgba(33, 150, 243, 0.1);
+}
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 4px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--divider-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.close-modal {
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.modal-body {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--divider-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+#logs-container {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.log-entry {
+  padding: 8px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 12px;
+}
+
+.log-entry:last-child {
+  border-bottom: none;
+}
+
+.log-timestamp {
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.log-category {
+  display: inline-block;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 10px;
+  margin-right: 4px;
+  color: white;
+}
+
+.log-category-scan {
+  background-color: var(--info-color);
+}
+
+.log-category-protection {
+  background-color: var(--success-color);
+}
+
+.log-category-training {
+  background-color: var(--training-color);
+}
+
+.log-category-detection {
+  background-color: var(--primary-color);
+}
+
+.log-category-system {
+  background-color: var(--text-secondary);
+}
+
+.log-action {
+  font-weight: 600;
+}
+
+.log-details {
+  margin-top: 4px;
+  color: var(--text-secondary);
+}
+
+.warning-message {
+  color: var(--danger-color);
+  text-align: center;
+}
+
+.warning-message p {
+  margin-bottom: 12px;
+}
+
+#confirm-training-button {
+  background-color: var(--danger-color);
+}
+
+#confirm-training-button:hover {
+  background-color: #d32f2f;
+}
+
+#cancel-training-button {
+  background-color: var(--text-secondary);
+}
