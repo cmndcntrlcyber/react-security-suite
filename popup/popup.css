@@ -73,6 +73,15 @@ h3 {
   align-items: center;
 }
 
+.auto-demo-toggle {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+  padding: 8px;
+  background-color: rgba(255, 87, 34, 0.1);
+  border-radius: 4px;
+}
+
 .mode-label {
   margin-right: 8px;
   font-size: 12px;

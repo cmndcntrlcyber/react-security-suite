@@ -13,6 +13,7 @@ let extensionState = {
   mode: 'defense',
   protectionActive: false,
   trainingActive: false,
+  autoDemoActive: false,
   reactDetected: false,
   reactVersion: null,
   demonstrations: {
@@ -21,6 +22,9 @@ let extensionState = {
     cleanupFunctions: []
   }
 };
+
+// Demo types available for auto-demo
+const DEMO_TYPES = ['reactInternals', 'domManipulation', 'cookieAccess', 'persistentHook'];
 
 // Constants
 const TRAINING_BANNER_ID = 'react-security-suite-training-banner';
@@ -86,6 +90,24 @@ function initialize() {
     if (message.action === 'setMode') {
       setMode(message.mode);
       sendResponse({ success: true, mode: extensionState.mode });
+      
+      // If training mode is activated and auto-demo is enabled, run the demos
+      if (message.mode === 'training' && extensionState.autoDemoActive) {
+        runAllDemos();
+      }
+      
+      return true;
+    }
+    
+    if (message.action === 'setAutoDemo') {
+      extensionState.autoDemoActive = message.autoDemo;
+      
+      // If auto-demo is enabled and we're in training mode, run the demos
+      if (extensionState.autoDemoActive && extensionState.trainingActive) {
+        runAllDemos();
+      }
+      
+      sendResponse({ success: true, autoDemo: extensionState.autoDemoActive });
       return true;
     }
   });
@@ -377,12 +399,61 @@ function setMode(mode) {
   // If switching to training mode, show warning banner
   if (mode === 'training') {
     showTrainingBanner();
+    
+    // Add the global training mode flag that demos check for
+    window.__reactSecuritySuiteTrainingMode = true;
   } else {
     hideTrainingBanner();
     stopDemonstration(); // Stop any active demonstrations
+    
+    // Remove the global training mode flag
+    window.__reactSecuritySuiteTrainingMode = false;
   }
   
   return true;
+}
+
+// Run all demonstrations in sequence
+async function runAllDemos() {
+  // Don't run if not in training mode
+  if (!extensionState.trainingActive || !extensionState.autoDemoActive) {
+    return;
+  }
+  
+  // Don't run if demonstrations are already active
+  if (extensionState.demonstrations.active) {
+    stopDemonstration();
+    // Wait for cleanup to complete
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+  
+  console.log('[React Security Suite] Running all demonstrations in sequence');
+  
+  // Run each demo type with a delay between them
+  for (const demoType of DEMO_TYPES) {
+    if (!extensionState.autoDemoActive) break; // Stop if auto-demo was disabled
+    
+    console.log(`[React Security Suite] Running demonstration: ${demoType}`);
+    
+    // Run the demonstration
+    const result = runDemonstration(demoType);
+    
+    if (!result.success) {
+      console.error(`[React Security Suite] Failed to run demonstration: ${demoType}`, result.error);
+      continue;
+    }
+    
+    // Wait for demonstration to run (10 seconds)
+    await new Promise(resolve => setTimeout(resolve, 10000));
+    
+    // Stop the demonstration
+    stopDemonstration();
+    
+    // Wait between demonstrations (2 seconds)
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  }
+  
+  console.log('[React Security Suite] Completed all demonstrations');
 }
 
 // Show training mode banner

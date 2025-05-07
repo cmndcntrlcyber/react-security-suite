@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React Security Suite Demo Tester</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .warning {
+      background-color: #ff5722;
+      color: white;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    button {
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background-color: #1976D2;
+    }
+    .demo-section {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    .demo-title {
+      margin-top: 0;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    .logs {
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      font-family: monospace;
+      height: 200px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    .log-entry {
+      margin-bottom: 5px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 5px;
+    }
+    .success {
+      color: green;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>React Security Suite Demo Tester</h1>
+  
+  <div class="warning">
+    ⚠️ This page is for testing the React Security Suite demonstrations ⚠️
+  </div>
+  
+  <div class="controls">
+    <h2>Training Mode</h2>
+    <button id="enable-training">Enable Training Mode</button>
+    <button id="disable-training">Disable Training Mode</button>
+    
+    <h2>Auto-Demo Mode</h2>
+    <button id="enable-auto-demo">Enable Auto-Demo</button>
+    <button id="disable-auto-demo">Disable Auto-Demo</button>
+  </div>
+  
+  <div class="demos">
+    <h2>Demonstrations</h2>
+    
+    <div class="demo-section">
+      <h3 class="demo-title">React Internals Access</h3>
+      <p>Demonstrates how malicious code could access React internals.</p>
+      <button class="demo-button" data-demo="reactInternals">Run Demo</button>
+    </div>
+    
+    <div class="demo-section">
+      <h3 class="demo-title">DOM Manipulation</h3>
+      <p>Shows how React DOM could be hijacked to inject content.</p>
+      <button class="demo-button" data-demo="domManipulation">Run Demo</button>
+    </div>
+    
+    <div class="demo-section">
+      <h3 class="demo-title">Cookie Access</h3>
+      <p>Demonstrates how cookies could be accessed and exfiltrated.</p>
+      <button class="demo-button" data-demo="cookieAccess">Run Demo</button>
+    </div>
+    
+    <div class="demo-section">
+      <h3 class="demo-title">Persistent Hook</h3>
+      <p>Shows how attacks can persist through React re-renders.</p>
+      <button class="demo-button" data-demo="persistentHook">Run Demo</button>
+    </div>
+  </div>
+  
+  <div class="action-controls">
+    <button id="stop-demo">Stop Demonstration</button>
+    <button id="run-all-demos">Run All Demos</button>
+  </div>
+  
+  <div class="logs">
+    <h3>Console Logs</h3>
+    <div id="logs-container"></div>
+  </div>
+
+  <!-- Include React for testing demos -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  
+  <script>
+    // Mock the browser extension API
+    window.chrome = {
+      runtime: {
+        sendMessage: function(message, callback) {
+          logAction(`Chrome message sent: ${JSON.stringify(message)}`);
+          if (callback) {
+            callback({ success: true });
+          }
+        },
+        onMessage: {
+          addListener: function(listener) {
+            // Store the listener
+            window._messageListeners = window._messageListeners || [];
+            window._messageListeners.push(listener);
+          }
+        }
+      },
+      tabs: {
+        sendMessage: function(tabId, message, callback) {
+          logAction(`Tab message sent: ${JSON.stringify(message)}`);
+          
+          // Simulate content script responding
+          if (message.action === 'runDemonstration') {
+            runDemo(message.attackType);
+          }
+          
+          if (message.action === 'stopDemonstration') {
+            stopDemo();
+          }
+          
+          if (callback) {
+            callback({ success: true });
+          }
+        },
+        query: function(queryInfo, callback) {
+          callback([{ id: 1, url: 'https://example.com' }]);
+        }
+      }
+    };
+    
+    // Log actions to UI
+    function logAction(message, type = 'info') {
+      const logsContainer = document.getElementById('logs-container');
+      const logEntry = document.createElement('div');
+      logEntry.className = `log-entry ${type}`;
+      logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logsContainer.appendChild(logEntry);
+      logsContainer.scrollTop = logsContainer.scrollHeight;
+      
+      // Also log to console
+      console.log(message);
+    }
+    
+    // Initialize the demo tester
+    document.addEventListener('DOMContentLoaded', function() {
+      // Enable training mode button
+      document.getElementById('enable-training').addEventListener('click', function() {
+        window.__reactSecuritySuiteTrainingMode = true;
+        logAction('Training mode enabled', 'success');
+      });
+      
+      // Disable training mode button
+      document.getElementById('disable-training').addEventListener('click', function() {
+        window.__reactSecuritySuiteTrainingMode = false;
+        logAction('Training mode disabled', 'success');
+      });
+      
+      // Enable auto-demo button
+      document.getElementById('enable-auto-demo').addEventListener('click', function() {
+        window.__reactSecuritySuiteAutoDemoActive = true;
+        logAction('Auto-demo mode enabled', 'success');
+        
+        if (window.__reactSecuritySuiteTrainingMode) {
+          document.getElementById('run-all-demos').click();
+        } else {
+          logAction('Training mode must be enabled to run auto-demos', 'error');
+        }
+      });
+      
+      // Disable auto-demo button
+      document.getElementById('disable-auto-demo').addEventListener('click', function() {
+        window.__reactSecuritySuiteAutoDemoActive = false;
+        logAction('Auto-demo mode disabled', 'success');
+      });
+      
+      // Stop demo button
+      document.getElementById('stop-demo').addEventListener('click', function() {
+        stopDemo();
+      });
+      
+      // Run all demos button
+      document.getElementById('run-all-demos').addEventListener('click', function() {
+        if (!window.__reactSecuritySuiteTrainingMode) {
+          logAction('Training mode must be enabled to run demos', 'error');
+          return;
+        }
+        
+        const demoButtons = document.querySelectorAll('.demo-button');
+        runDemoSequence(Array.from(demoButtons).map(btn => btn.dataset.demo), 0);
+      });
+      
+      // Demo buttons
+      document.querySelectorAll('.demo-button').forEach(button => {
+        button.addEventListener('click', function() {
+          if (!window.__reactSecuritySuiteTrainingMode) {
+            logAction('Training mode must be enabled to run demos', 'error');
+            return;
+          }
+          
+          const demoType = this.dataset.demo;
+          runDemo(demoType);
+        });
+      });
+    });
+    
+    // Run demo function
+    function runDemo(demoType) {
+      logAction(`Running demonstration: ${demoType}`, 'success');
+      
+      // Disable demo buttons
+      document.querySelectorAll('.demo-button').forEach(button => {
+        button.disabled = true;
+      });
+      
+      // Mock for each demo type
+      switch (demoType) {
+        case 'reactInternals':
+          simulateReactInternalsDemo();
+          break;
+        case 'domManipulation':
+          simulateDomManipulationDemo();
+          break;
+        case 'cookieAccess':
+          simulateCookieAccessDemo();
+          break;
+        case 'persistentHook':
+          simulatePersistentHookDemo();
+          break;
+      }
+    }
+    
+    // Run demo sequence
+    function runDemoSequence(demoTypes, index) {
+      if (index >= demoTypes.length) {
+        // Re-enable demo buttons
+        document.querySelectorAll('.demo-button').forEach(button => {
+          button.disabled = false;
+        });
+        return;
+      }
+      
+      // Run current demo
+      runDemo(demoTypes[index]);
+      
+      // Wait and run next demo
+      setTimeout(function() {
+        stopDemo();
+        
+        // Wait before next demo
+        setTimeout(function() {
+          runDemoSequence(demoTypes, index + 1);
+        }, 1000);
+      }, 5000);
+    }
+    
+    // Stop demo function
+    function stopDemo() {
+      logAction('Stopping active demonstration', 'info');
+      
+      // Cleanup any active demo elements
+      const demoContainer = document.getElementById('react-security-demo-container');
+      if (demoContainer) {
+        demoContainer.remove();
+      }
+      
+      const hookIndicator = document.getElementById('react-security-hook-indicator');
+      if (hookIndicator) {
+        hookIndicator.remove();
+      }
+      
+      // Clear any intervals
+      if (window.__demoIntervals) {
+        window.__demoIntervals.forEach(interval => {
+          clearInterval(interval);
+        });
+        window.__demoIntervals = [];
+      }
+      
+      // Re-enable demo buttons
+      document.querySelectorAll('.demo-button').forEach(button => {
+        button.disabled = false;
+      });
+    }
+    
+    // Simulate React internals demo
+    function simulateReactInternalsDemo() {
+      // Create a container to show the demo
+      const container = document.createElement('div');
+      container.id = 'react-security-demo-container';
+      container.style.cssText = `
+        position: fixed;
+        top: 40px;
+        left: 20px;
+        right: 20px;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: #00ff00;
+        font-family: monospace;
+        padding: 20px;
+        border-radius: 5px;
+        z-index: 2147483646;
+        max-height: 80vh;
+        overflow: auto;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      `;
+      
+      let demoContent = '<h2>React Internals Access Demonstration</h2>';
+      demoContent += '<p>This demonstrates how malicious code could access React internals.</p>';
+      
+      // Show React info
+      const reactInfo = {
+        version: React.version,
+        detected: true
+      };
+      
+      demoContent += `<pre>${JSON.stringify(reactInfo, null, 2)}</pre>`;
+      
+      // Simulate data exfiltration
+      const dataToExfiltrate = {
+        reactState: { 
+          user: { id: 123, name: "Test User" }, 
+          isAuthenticated: true,
+          sessionData: { token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." } 
+        },
+        url: window.location.href
+      };
+      
+      logAction('Simulating data exfiltration to: https://attck-deploy.net/attcks/T1119/collect', 'info');
+      
+      // Simulate fetch (don't actually send anything)
+      logAction(`Data being exfiltrated: ${JSON.stringify(dataToExfiltrate)}`, 'error');
+      
+      container.innerHTML = demoContent;
+      document.body.appendChild(container);
+    }
+    
+    // Simulate DOM manipulation demo
+    function simulateDomManipulationDemo() {
+      // Create a container to show the demo
+      const container = document.createElement('div');
+      container.id = 'react-security-demo-container';
+      container.style.cssText = `
+        position: fixed;
+        top: 40px;
+        left: 20px;
+        right: 20px;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: #00ff00;
+        font-family: monospace;
+        padding: 20px;
+        border-radius: 5px;
+        z-index: 2147483646;
+        max-height: 80vh;
+        overflow: auto;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      `;
+      
+      let demoContent = '<h2>DOM Manipulation Demonstration</h2>';
+      demoContent += '<p>This demonstrates how malicious code could manipulate the DOM using React.</p>';
+      
+      // Show injection example
+      const demoElement = document.createElement('div');
+      demoElement.style.cssText = `
+        background-color: #ff0000;
+        color: white;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        text-align: center;
+      `;
+      demoElement.innerHTML = '<strong>⚠️ SIMULATED MALICIOUS CONTENT INJECTION ⚠️</strong><br>This content was injected for demonstration purposes only.';
+      
+      demoContent += '<h3>Simulated Injection:</h3>';
+      demoContent += demoElement.outerHTML;
+      
+      container.innerHTML = demoContent;
+      document.body.appendChild(container);
+    }
+    
+    // Simulate cookie access demo
+    function simulateCookieAccessDemo() {
+      // Create a container to show the demo
+      const container = document.createElement('div');
+      container.id = 'react-security-demo-container';
+      container.style.cssText = `
+        position: fixed;
+        top: 40px;
+        left: 20px;
+        right: 20px;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: #00ff00;
+        font-family: monospace;
+        padding: 20px;
+        border-radius: 5px;
+        z-index: 2147483646;
+        max-height: 80vh;
+        overflow: auto;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      `;
+      
+      let demoContent = '<h2>Cookie Access Demonstration</h2>';
+      demoContent += '<p>This demonstrates how malicious code could access cookies.</p>';
+      
+      // Set up a demo cookie
+      document.cookie = "demo_session=abcdef123456; path=/";
+      document.cookie = "demo_user=user123; path=/";
+      
+      // Get cookies
+      const cookies = document.cookie;
+      
+      // Simulate data exfiltration
+      logAction('Simulating cookie exfiltration to: https://attck-deploy.net/attcks/T1119/collect', 'info');
+      logAction(`Cookies being exfiltrated: ${cookies}`, 'error');
+      
+      demoContent += `<h3>Cookies Found:</h3><pre>${cookies}</pre>`;
+      
+      container.innerHTML = demoContent;
+      document.body.appendChild(container);
+    }
+    
+    // Simulate persistent hook demo
+    function simulatePersistentHookDemo() {
+      // Create a container to show the demo
+      const container = document.createElement('div');
+      container.id = 'react-security-demo-container';
+      container.style.cssText = `
+        position: fixed;
+        top: 40px;
+        left: 20px;
+        right: 20px;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: #00ff00;
+        font-family: monospace;
+        padding: 20px;
+        border-radius: 5px;
+        z-index: 2147483646;
+        max-height: 80vh;
+        overflow: auto;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      `;
+      
+      let demoContent = '<h2>Persistent Hook Demonstration</h2>';
+      demoContent += '<p>This demonstrates how malicious code could create persistent hooks in React.</p>';
+      
+      // Create the hook indicator
+      const hookIndicator = document.createElement('div');
+      hookIndicator.id = 'react-security-hook-indicator';
+      hookIndicator.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #ff0000;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        z-index: 2147483645;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      `;
+      hookIndicator.innerHTML = '<strong>Persistent Hook Demo:</strong> Hook executed 0 times';
+      
+      // Set up the interval
+      let hookCounter = 0;
+      const hookInterval = setInterval(() => {
+        hookCounter++;
+        hookIndicator.innerHTML = `<strong>Persistent Hook Demo:</strong> Hook executed ${hookCounter} times`;
+        
+        if (hookCounter % 2 === 0) {
+          // Simulate data exfiltration every other interval
+          logAction(`Hook exfiltrating data (execution ${hookCounter})`, 'error');
+        }
+      }, 2000);
+      
+      // Store interval for cleanup
+      window.__demoIntervals = window.__demoIntervals || [];
+      window.__demoIntervals.push(hookInterval);
+      
+      container.innerHTML = demoContent;
+      document.body.appendChild(container);
+      document.body.appendChild(hookIndicator);
+    }
+  </script>
+</body>
+</html>

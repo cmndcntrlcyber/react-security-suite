@@ -11,6 +11,7 @@ let state = {
   scanResults: [],
   protectionActive: false,
   trainingActive: false,
+  autoDemoActive: false,
   detectedReactVersion: null,
   logs: []
 };
@@ -112,6 +113,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else if (!message.active && state.trainingActive) {
       state.trainingActive = false;
       state.mode = 'defense';
+      // When leaving training mode, disable auto-demo
+      state.autoDemoActive = false;
       logEvent('training', 'deactivated', {
         url: sender.tab?.url
       });
@@ -122,6 +125,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       success: true,
       trainingActive: state.trainingActive,
       mode: state.mode
+    });
+  }
+  
+  // Handle auto-demo mode activation/deactivation
+  if (message.action === 'setAutoDemo') {
+    state.autoDemoActive = message.autoDemo;
+    
+    logEvent('training', message.autoDemo ? 'autoDemoEnabled' : 'autoDemoDisabled', {
+      url: sender.tab?.url
+    });
+    
+    saveState();
+    sendResponse({
+      success: true,
+      autoDemoActive: state.autoDemoActive
     });
   }
   

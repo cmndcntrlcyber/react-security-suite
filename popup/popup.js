@@ -11,6 +11,10 @@ const elements = {
   modeSwitch: document.getElementById('mode-switch'),
   currentMode: document.getElementById('current-mode'),
   
+  // Auto-demo toggle
+  autoDemoSwitch: document.getElementById('auto-demo-switch'),
+  autoDemoStatus: document.getElementById('auto-demo-status'),
+  
   // Containers
   defenseContainer: document.getElementById('defense-container'),
   trainingContainer: document.getElementById('training-container'),
@@ -48,6 +52,7 @@ let state = {
   scanResults: [],
   protectionActive: false,
   trainingActive: false,
+  autoDemoActive: false,
   detectedReactVersion: null,
   logs: [],
   activeTab: null
@@ -86,6 +91,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 function setupEventListeners() {
   // Mode toggle
   elements.modeSwitch.addEventListener('change', handleModeToggle);
+  
+  // Auto-demo toggle
+  elements.autoDemoSwitch.addEventListener('change', handleAutoDemoToggle);
   
   // Buttons
   elements.scanButton.addEventListener('click', scanPage);
@@ -150,6 +158,11 @@ function setMode(mode) {
     elements.modeSwitch.checked = false;
     elements.defenseContainer.classList.remove('hidden');
     elements.trainingContainer.classList.add('hidden');
+    
+    // Disable auto-demo when leaving training mode
+    if (state.autoDemoActive) {
+      setAutoDemo(false);
+    }
   } else if (mode === 'training') {
     elements.currentMode.textContent = 'Training';
     elements.currentMode.style.color = 'var(--training-color)';
@@ -174,6 +187,84 @@ function setMode(mode) {
     action: 'setMode',
     mode: mode
   });
+  
+  // If training mode is activated and auto-demo is on, run demos
+  if (mode === 'training' && state.autoDemoActive) {
+    runAllDemos();
+  }
+}
+
+// Handle auto-demo toggle
+function handleAutoDemoToggle() {
+  const isAutoDemoActive = elements.autoDemoSwitch.checked;
+  setAutoDemo(isAutoDemoActive);
+}
+
+// Set auto-demo state
+function setAutoDemo(active) {
+  // Update UI
+  elements.autoDemoSwitch.checked = active;
+  elements.autoDemoStatus.textContent = active ? 'Enabled' : 'Disabled';
+  elements.autoDemoStatus.style.color = active ? 'var(--training-color)' : 'var(--text-secondary)';
+  
+  // Update state
+  state.autoDemoActive = active;
+  
+  // Send message to content script to update auto-demo state
+  chrome.tabs.sendMessage(state.activeTab.id, {
+    action: 'setAutoDemo',
+    autoDemo: active
+  });
+  
+  // If auto-demo is enabled and we're already in training mode, run demos
+  if (active && state.trainingActive) {
+    runAllDemos();
+  }
+}
+
+// Run all demos in sequence
+function runAllDemos() {
+  // Disable all demo buttons
+  document.querySelectorAll('.demo-button').forEach(button => {
+    button.disabled = true;
+  });
+  
+  // Get all demo types
+  const demoTypes = Array.from(document.querySelectorAll('.demo-button'))
+    .map(button => button.getAttribute('data-demo'));
+  
+  // Run demos in sequence with delays
+  runDemoSequence(demoTypes, 0);
+}
+
+// Run demos sequentially
+function runDemoSequence(demoTypes, index) {
+  if (index >= demoTypes.length || !state.autoDemoActive) {
+    // Re-enable buttons when done
+    document.querySelectorAll('.demo-button').forEach(button => {
+      button.disabled = false;
+    });
+    elements.stopDemoButton.disabled = true;
+    return;
+  }
+  
+  // Enable stop button
+  elements.stopDemoButton.disabled = false;
+  
+  // Run current demo
+  runDemonstration(demoTypes[index]);
+  
+  // Wait 10 seconds before running the next demo
+  setTimeout(() => {
+    // Stop current demo
+    chrome.tabs.sendMessage(state.activeTab.id, { action: 'stopDemonstration' });
+    
+    // Wait 2 seconds before starting next demo
+    setTimeout(() => {
+      // Process next demo
+      runDemoSequence(demoTypes, index + 1);
+    }, 2000);
+  }, 10000);
 }
 
 // Scan the page for vulnerabilities
