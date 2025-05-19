@@ -5,4 +5,5 @@ run = "# Install dependencies `npm install`  # Build the extension `npm run buil
 channel = "stable-24_05"
 
 [deployment]
-run = ["sh", "-c", "# Install dependencies `npm install`  # Build the extension `npm run build`  # Create a ZIP file `npm run package`"]
+run = ["sh", "-c", "npm start"]
+build = ["sh", "-c", "npm run build"]

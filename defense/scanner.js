@@ -100,13 +100,43 @@ async function scanForExposedReactInternals() {
 async function scanForExposedReactDOMInternals() {
   const vulnerabilities = [];
   
+  // Check for exposed ReactDOM internals
   if (window.ReactDOM && window.ReactDOM.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED) {
     vulnerabilities.push({
       type: 'EXPOSED_REACTDOM_INTERNALS',
       severity: 'HIGH',
       description: 'ReactDOM internals are exposed, allowing potential DOM manipulation attacks',
       location: window.location.href,
-      details: 'The ReactDOM.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED object is accessible'
+      details: 'The ReactDOM.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED object is accessible',
+      recommendation: 'Use production builds of React and implement proper CSP headers'
+    });
+  }
+
+  // Check for direct window.React access
+  if (window.React) {
+    vulnerabilities.push({
+      type: 'EXPOSED_REACT_GLOBAL',
+      severity: 'MEDIUM',
+      description: 'React is exposed globally, enabling potential runtime manipulation',
+      location: window.location.href,
+      details: 'window.React is accessible to potential attackers',
+      recommendation: 'Use module bundling and avoid exposing React globally'
+    });
+  }
+
+  // Check for vulnerable render methods
+  if (window.ReactDOM?.render || window.ReactDOM?.createRoot) {
+    const methods = [];
+    if (window.ReactDOM.render) methods.push('render');
+    if (window.ReactDOM.createRoot) methods.push('createRoot');
+    
+    vulnerabilities.push({
+      type: 'UNPROTECTED_RENDER_METHODS',
+      severity: 'HIGH',
+      description: `Unprotected React render methods found: ${methods.join(', ')}`,
+      location: window.location.href,
+      details: 'React render methods are accessible and could be hijacked',
+      recommendation: 'Implement render method protection and CSP headers'
     });
   }
   

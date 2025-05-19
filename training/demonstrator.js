@@ -21,6 +21,23 @@ export function runDemonstration(demoType, options = {}) {
       error: 'Training mode must be active to run demonstrations' 
     };
   }
+
+  // Log demonstration start
+  console.log(`[React Security Suite] Starting demonstration: ${demoType}`);
+  
+  // Add demo metadata
+  const demoMeta = {
+    timestamp: new Date().toISOString(),
+    demoType,
+    options,
+    reactVersion: window.React?.version || 'unknown'
+  };
+  
+  // Store demo history for reporting
+  if (!window.__reactSecuritySuiteDemoHistory) {
+    window.__reactSecuritySuiteDemoHistory = [];
+  }
+  window.__reactSecuritySuiteDemoHistory.push(demoMeta);
   
   // Show training banner if not already visible
   showTrainingBanner();
